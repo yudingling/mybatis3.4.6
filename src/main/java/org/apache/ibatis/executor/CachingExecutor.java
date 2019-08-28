@@ -32,6 +32,8 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
@@ -71,9 +73,9 @@ public class CachingExecutor implements Executor {
   }
 
   @Override
-  public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+  public int update(MappedStatement ms, Object parameterObject, DbSyncParam syncParam) throws SQLException {
     flushCacheIfRequired(ms);
-    return delegate.update(ms, parameterObject);
+    return delegate.update(ms, parameterObject, syncParam);
   }
 
   @Override

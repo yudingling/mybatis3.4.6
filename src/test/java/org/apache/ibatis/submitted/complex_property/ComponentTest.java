@@ -51,7 +51,7 @@ public class ComponentTest {
       user.setUsername("johnny" + Calendar.getInstance().getTimeInMillis());//random
       user.setAdministrator(true);
 
-      sqlSession.insert("User.insert", user);
+      sqlSession.insert("User.insert", user, null);
 
       //Retrieve User
       user = (User) sqlSession.selectOne("User.find", user.getId());

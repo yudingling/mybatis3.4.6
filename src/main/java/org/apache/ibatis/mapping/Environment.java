@@ -19,6 +19,9 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.transaction.TransactionFactory;
 
+import com.zeasn.common.ext1.datasync.ISyncSender;
+import com.zeasn.common.ext1.datasync.SyncTemplate;
+
 /**
  * @author Clinton Begin
  */
@@ -26,8 +29,15 @@ public final class Environment {
   private final String id;
   private final TransactionFactory transactionFactory;
   private final DataSource dataSource;
-
+  
+  private final SyncTemplate template;
+  private final ISyncSender sender;
+  
   public Environment(String id, TransactionFactory transactionFactory, DataSource dataSource) {
+	  this(id, transactionFactory, dataSource, null, null);
+  }
+
+  public Environment(String id, TransactionFactory transactionFactory, DataSource dataSource, SyncTemplate template, ISyncSender sender) {
     if (id == null) {
       throw new IllegalArgumentException("Parameter 'id' must not be null");
     }
@@ -40,12 +50,18 @@ public final class Environment {
     }
     this.transactionFactory = transactionFactory;
     this.dataSource = dataSource;
+    
+    this.template = template;
+    this.sender = sender;
   }
 
   public static class Builder {
       private String id;
       private TransactionFactory transactionFactory;
       private DataSource dataSource;
+      
+      private SyncTemplate template;
+      private ISyncSender sender;
 
     public Builder(String id) {
       this.id = id;
@@ -64,9 +80,20 @@ public final class Environment {
     public String id() {
       return this.id;
     }
+    
+    public Builder syncTemplate(SyncTemplate template){
+    	this.template = template;
+    	return this;
+    }
+    
+    public Builder syncSender(ISyncSender sender){
+    	this.sender = sender;
+    	return this;
+    }
+    
 
     public Environment build() {
-      return new Environment(this.id, this.transactionFactory, this.dataSource);
+      return new Environment(this.id, this.transactionFactory, this.dataSource, this.template, this.sender);
     }
 
   }
@@ -83,4 +110,11 @@ public final class Environment {
     return this.dataSource;
   }
 
+	public SyncTemplate getTemplate() {
+		return template;
+	}
+	
+	public ISyncSender getSender() {
+		return sender;
+	}
 }

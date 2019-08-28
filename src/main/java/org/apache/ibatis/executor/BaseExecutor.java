@@ -20,9 +20,15 @@ import static org.apache.ibatis.executor.ExecutionPlaceholder.EXECUTION_PLACEHOL
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.cursor.Cursor;
@@ -31,6 +37,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.logging.jdbc.ConnectionLogger;
 import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.mapping.ParameterMode;
@@ -43,6 +50,9 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+
+import com.zeasn.common.ext1.datasync.ISyncSender;
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
 
 /**
  * @author Clinton Begin
@@ -61,6 +71,10 @@ public abstract class BaseExecutor implements Executor {
 
   protected int queryStack;
   private boolean closed;
+  
+  //each un-transaction db action will got a unique executor, if there is a transaction, all actions in this transaction will use the same executor.
+  private Map<String, List<String>> groupedUptSql = new HashMap<>();
+  private List<String> unGroupUptSql = new ArrayList<>();
 
   protected BaseExecutor(Configuration configuration, Transaction transaction) {
     this.transaction = transaction;
@@ -106,15 +120,37 @@ public abstract class BaseExecutor implements Executor {
   public boolean isClosed() {
     return closed;
   }
+  
+  /**
+   * cache executed sql after updating. synchronization occurs after the transaction(if there has)
+   */
+  protected void afterUpdated(String sql, DbSyncParam syncParam){
+	  String groupName = syncParam != null ? syncParam.getGroupName() : null;
+	  
+	  if(SyncTemplateActor.canSync(this, groupName)){
+		  if(StringUtils.isNotEmpty(groupName)){
+			  this.groupedUptSql.computeIfAbsent(groupName, gpNm -> new ArrayList<>()).add(sql);
+			  
+		  }else{
+			  this.unGroupUptSql.add(sql);
+		  }
+	  }
+  }
+  
+  private void afterCommit(){
+	  if(MapUtils.isNotEmpty(this.groupedUptSql) || CollectionUtils.isNotEmpty(this.unGroupUptSql)){
+		  SyncTemplateActor.sync(this, this.groupedUptSql, this.unGroupUptSql);
+	  }
+  }
 
   @Override
-  public int update(MappedStatement ms, Object parameter) throws SQLException {
+  public int update(MappedStatement ms, Object parameter, DbSyncParam syncParam) throws SQLException {
     ErrorContext.instance().resource(ms.getResource()).activity("executing an update").object(ms.getId());
     if (closed) {
       throw new ExecutorException("Executor was closed.");
     }
     clearLocalCache();
-    return doUpdate(ms, parameter);
+    return doUpdate(ms, parameter, syncParam);
   }
 
   @Override
@@ -243,6 +279,9 @@ public abstract class BaseExecutor implements Executor {
     if (required) {
       transaction.commit();
     }
+    
+    //fire synchronization
+    this.afterCommit();
   }
 
   @Override
@@ -267,7 +306,7 @@ public abstract class BaseExecutor implements Executor {
     }
   }
 
-  protected abstract int doUpdate(MappedStatement ms, Object parameter)
+  protected abstract int doUpdate(MappedStatement ms, Object parameter, DbSyncParam syncParam)
       throws SQLException;
 
   protected abstract List<BatchResult> doFlushStatements(boolean isRollback)
@@ -387,5 +426,40 @@ public abstract class BaseExecutor implements Executor {
     }
 
   }
+  
+  private static class SyncTemplateActor {
+		private SyncTemplateActor(){}
+		
+		public static boolean canSync(BaseExecutor executor, String groupName){
+			Environment env = executor.configuration.getEnvironment();
+			
+			if(env.getTemplate() == null){
+				return false;
+			}
+			
+			return env.getTemplate().getMysql().canSync(groupName);
+		}
+		
+		public static void sync(BaseExecutor executor, Map<String, List<String>> groupedUptSql, List<String> unGroupUptSql){
+			Environment env = executor.configuration.getEnvironment();
+			
+			if(env.getSender() != null && env.getTemplate() != null){
+				String appName = env.getTemplate().getAppName();
+				ISyncSender sender = env.getSender();
+				
+				if(MapUtils.isNotEmpty(groupedUptSql)){
+					groupedUptSql.forEach((groupName, sqlList) ->{
+						if(CollectionUtils.isNotEmpty(sqlList)){
+							sqlList.forEach(sql -> sender.sendMysql(appName, groupName, sql));
+						}
+					});
+				}
+				
+				if(CollectionUtils.isNotEmpty(unGroupUptSql)){
+					unGroupUptSql.forEach(sql -> sender.sendMysql(appName, null, sql));
+				}
+			}
+		}
+	}
 
 }

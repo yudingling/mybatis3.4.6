@@ -131,13 +131,6 @@
 		<system>Travis CI</system>
 		<url>https://travis-ci.org/mybatis/mybatis-3/</url>
 	</ciManagement>
-	<distributionManagement>
-		<site>
-			<id>gh-pages</id>
-			<name>Mybatis GitHub Pages</name>
-			<url>git:ssh://git@github.com/mybatis/mybatis-3.git?gh-pages#</url>
-		</site>
-	</distributionManagement>
 
 	<properties>
 		<maven.compiler.testTarget>1.8</maven.compiler.testTarget>
@@ -467,4 +460,18 @@
 			</build>
 		</profile>
 	</profiles>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>user-snapshot</id>
+			<name>User Porject Snapshot</name>
+			<url>http://nexus.zeasn.com/nexus/content/repositories/snapshots/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+		<repository>
+			<id>user-release</id>
+			<name>User Porject Release</name>
+			<url>http://nexus.zeasn.com/nexus/content/repositories/releases/</url>
+		</repository>
+	</distributionManagement>
 </project>

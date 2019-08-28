@@ -23,6 +23,8 @@ import java.util.Map;
 import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.BatchResult;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 /**
  * The primary Java interface for working with MyBatis.
  * Through this interface you can execute commands, get mappers and manage transactions.
@@ -174,7 +176,7 @@ public interface SqlSession extends Closeable {
    * @param statement Unique identifier matching the statement to execute.
    * @return int The number of rows affected by the insert.
    */
-  int insert(String statement);
+  int insert(String statement, DbSyncParam syncParam);
 
   /**
    * Execute an insert statement with the given parameter object. Any generated
@@ -184,14 +186,14 @@ public interface SqlSession extends Closeable {
    * @param parameter A parameter object to pass to the statement.
    * @return int The number of rows affected by the insert.
    */
-  int insert(String statement, Object parameter);
+  int insert(String statement, Object parameter, DbSyncParam syncParam);
 
   /**
    * Execute an update statement. The number of rows affected will be returned.
    * @param statement Unique identifier matching the statement to execute.
    * @return int The number of rows affected by the update.
    */
-  int update(String statement);
+  int update(String statement, DbSyncParam syncParam);
 
   /**
    * Execute an update statement. The number of rows affected will be returned.
@@ -199,14 +201,14 @@ public interface SqlSession extends Closeable {
    * @param parameter A parameter object to pass to the statement.
    * @return int The number of rows affected by the update.
    */
-  int update(String statement, Object parameter);
+  int update(String statement, Object parameter, DbSyncParam syncParam);
 
   /**
    * Execute a delete statement. The number of rows affected will be returned.
    * @param statement Unique identifier matching the statement to execute.
    * @return int The number of rows affected by the delete.
    */
-  int delete(String statement);
+  int delete(String statement, DbSyncParam syncParam);
 
   /**
    * Execute a delete statement. The number of rows affected will be returned.
@@ -214,7 +216,7 @@ public interface SqlSession extends Closeable {
    * @param parameter A parameter object to pass to the statement.
    * @return int The number of rows affected by the delete.
    */
-  int delete(String statement, Object parameter);
+  int delete(String statement, Object parameter, DbSyncParam syncParam);
 
   /**
    * Flushes batch statements and commits database connection.

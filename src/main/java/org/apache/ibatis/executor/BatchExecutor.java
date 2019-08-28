@@ -35,6 +35,8 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 /**
  * @author Jeff Butler 
  */
@@ -52,7 +54,7 @@ public class BatchExecutor extends BaseExecutor {
   }
 
   @Override
-  public int doUpdate(MappedStatement ms, Object parameterObject) throws SQLException {
+  public int doUpdate(MappedStatement ms, Object parameterObject, DbSyncParam syncParam) throws SQLException {
     final Configuration configuration = ms.getConfiguration();
     final StatementHandler handler = configuration.newStatementHandler(this, ms, parameterObject, RowBounds.DEFAULT, null, null);
     final BoundSql boundSql = handler.getBoundSql();

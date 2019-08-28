@@ -94,7 +94,7 @@ public class AutoMappingUnknownColumnBehaviorTest {
     public static void setup() throws Exception {
         DataSource dataSource = BaseDataTest.createBlogDataSource();
         TransactionFactory transactionFactory = new JdbcTransactionFactory();
-        Environment environment = new Environment("Production", transactionFactory, dataSource);
+        Environment environment = new Environment("Production", transactionFactory, dataSource, null, null);
         Configuration configuration = new Configuration(environment);
         configuration.addMapper(Mapper.class);
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);

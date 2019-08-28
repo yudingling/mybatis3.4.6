@@ -25,6 +25,8 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,13 +43,21 @@ public class SimpleExecutor extends BaseExecutor {
   }
 
   @Override
-  public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+  public int doUpdate(MappedStatement ms, Object parameter, DbSyncParam syncParam) throws SQLException {
     Statement stmt = null;
     try {
       Configuration configuration = ms.getConfiguration();
       StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
       stmt = prepareStatement(handler, ms.getStatementLog());
-      return handler.update(stmt);
+      //get executed sql. stmt is a proxy and its toString method has been overrided
+      String sql = stmt.toString();
+      
+      int ret = handler.update(stmt);
+      
+      this.afterUpdated(sql, syncParam);
+      
+      return ret;
+      
     } finally {
       closeStatement(stmt);
     }

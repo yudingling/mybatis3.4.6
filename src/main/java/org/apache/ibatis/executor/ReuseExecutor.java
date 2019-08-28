@@ -33,6 +33,8 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 /**
  * @author Clinton Begin
  */
@@ -45,7 +47,7 @@ public class ReuseExecutor extends BaseExecutor {
   }
 
   @Override
-  public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+  public int doUpdate(MappedStatement ms, Object parameter, DbSyncParam syncParam) throws SQLException {
     Configuration configuration = ms.getConfiguration();
     StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
     Statement stmt = prepareStatement(handler, ms.getStatementLog());

@@ -68,7 +68,7 @@ public class ComplexTypeTest {
       list.add(p1);
       list.add(p2);
       item.properties = list;
-      sqlSession.update("updateProps", item);
+      sqlSession.update("updateProps", item, null);
     } finally {
       sqlSession.close();
     }

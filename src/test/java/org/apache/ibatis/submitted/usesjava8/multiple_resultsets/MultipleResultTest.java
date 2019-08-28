@@ -59,7 +59,7 @@ public class MultipleResultTest {
 
     Configuration configuration = new Configuration();
     Environment environment = new Environment("development", new JdbcTransactionFactory(), new UnpooledDataSource(
-        "org.postgresql.Driver", url, null));
+        "org.postgresql.Driver", url, null), null, null);
     configuration.setEnvironment(environment);
     configuration.setMapUnderscoreToCamelCase(true);
     configuration.addMapper(Mapper.class);

@@ -41,6 +41,8 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 /**
  * @author Clinton Begin
  * @author Franta Mejta
@@ -294,7 +296,7 @@ public class ResultLoaderMap {
     }
 
     @Override
-    protected int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
+    protected int doUpdate(MappedStatement ms, Object parameter, DbSyncParam syncParam) throws SQLException {
       throw new UnsupportedOperationException("Not supported.");
     }
 

@@ -39,6 +39,8 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 /**
  *
  * The default implementation for {@link SqlSession}.
@@ -176,26 +178,26 @@ public class DefaultSqlSession implements SqlSession {
   }
 
   @Override
-  public int insert(String statement) {
-    return insert(statement, null);
+  public int insert(String statement, DbSyncParam syncParam) {
+    return insert(statement, null, syncParam);
   }
 
   @Override
-  public int insert(String statement, Object parameter) {
-    return update(statement, parameter);
+  public int insert(String statement, Object parameter, DbSyncParam syncParam) {
+    return update(statement, parameter, syncParam);
   }
 
   @Override
-  public int update(String statement) {
-    return update(statement, null);
+  public int update(String statement, DbSyncParam syncParam) {
+    return update(statement, null, syncParam);
   }
 
   @Override
-  public int update(String statement, Object parameter) {
+  public int update(String statement, Object parameter, DbSyncParam syncParam) {
     try {
       dirty = true;
       MappedStatement ms = configuration.getMappedStatement(statement);
-      return executor.update(ms, wrapCollection(parameter));
+      return executor.update(ms, wrapCollection(parameter), syncParam);
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error updating database.  Cause: " + e, e);
     } finally {
@@ -204,13 +206,13 @@ public class DefaultSqlSession implements SqlSession {
   }
 
   @Override
-  public int delete(String statement) {
-    return update(statement, null);
+  public int delete(String statement, DbSyncParam syncParam) {
+    return update(statement, null, syncParam);
   }
 
   @Override
-  public int delete(String statement, Object parameter) {
-    return update(statement, parameter);
+  public int delete(String statement, Object parameter, DbSyncParam syncParam) {
+    return update(statement, parameter, syncParam);
   }
 
   @Override

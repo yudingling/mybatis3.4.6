@@ -96,9 +96,9 @@ public class BatchKeysTest {
     SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
     try {
       User user1 = new User(null, "Pocoyo");
-      sqlSession.insert("insert", user1);
+      sqlSession.insert("insert", user1, null);
       User user2 = new User(null, "Valentina");
-      sqlSession.insert("insert", user2);
+      sqlSession.insert("insert", user2, null);
       sqlSession.flushStatements();
       assertEquals(new Integer(50), user1.getId());
       assertEquals(new Integer(50), user2.getId());
@@ -121,9 +121,9 @@ public class BatchKeysTest {
     SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
     try {
       User user1 = new User(null, "Pocoyo");
-      sqlSession.insert("insertIdentity", user1);
+      sqlSession.insert("insertIdentity", user1, null);
       User user2 = new User(null, "Valentina");
-      sqlSession.insert("insertIdentity", user2);
+      sqlSession.insert("insertIdentity", user2, null);
       sqlSession.flushStatements();
       assertEquals(Integer.valueOf(0), user1.getId());
       assertEquals(Integer.valueOf(1), user2.getId());

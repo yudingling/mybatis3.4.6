@@ -41,7 +41,15 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
     this.statement = stmt;
   }
 
+  /**
+   * return statement.toString() to get executed sql
+   */
   @Override
+  public String toString() {
+	  return statement.toString();
+  }
+
+@Override
   public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
     try {
       if (Object.class.equals(method.getDeclaringClass())) {

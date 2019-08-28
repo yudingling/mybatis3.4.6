@@ -29,6 +29,8 @@ import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 /**
  * @author Larry Meadors
  */
@@ -227,33 +229,33 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
   }
 
   @Override
-  public int insert(String statement) {
-    return sqlSessionProxy.insert(statement);
+  public int insert(String statement, DbSyncParam syncParam) {
+    return sqlSessionProxy.insert(statement, syncParam);
   }
 
   @Override
-  public int insert(String statement, Object parameter) {
-    return sqlSessionProxy.insert(statement, parameter);
+  public int insert(String statement, Object parameter, DbSyncParam syncParam) {
+    return sqlSessionProxy.insert(statement, parameter, syncParam);
   }
 
   @Override
-  public int update(String statement) {
-    return sqlSessionProxy.update(statement);
+  public int update(String statement, DbSyncParam syncParam) {
+    return sqlSessionProxy.update(statement, syncParam);
   }
 
   @Override
-  public int update(String statement, Object parameter) {
-    return sqlSessionProxy.update(statement, parameter);
+  public int update(String statement, Object parameter, DbSyncParam syncParam) {
+    return sqlSessionProxy.update(statement, parameter, syncParam);
   }
 
   @Override
-  public int delete(String statement) {
-    return sqlSessionProxy.delete(statement);
+  public int delete(String statement, DbSyncParam syncParam) {
+    return sqlSessionProxy.delete(statement, syncParam);
   }
 
   @Override
-  public int delete(String statement, Object parameter) {
-    return sqlSessionProxy.delete(statement, parameter);
+  public int delete(String statement, Object parameter, DbSyncParam syncParam) {
+    return sqlSessionProxy.delete(statement, parameter, syncParam);
   }
 
   @Override

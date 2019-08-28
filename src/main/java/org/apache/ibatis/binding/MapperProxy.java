@@ -21,11 +21,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.Map;
 
 import org.apache.ibatis.lang.UsesJava7;
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
+
+import com.zeasn.common.ext1.datasync.SyncTemplate;
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncWrapperProxy;
+import com.zeasn.common.ext1.datasync.mybatis.IDbSyncWrapper;
 
 /**
  * @author Clinton Begin
@@ -47,8 +53,15 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
-      if (Object.class.equals(method.getDeclaringClass())) {
+    	Class<?> cls = method.getDeclaringClass();
+    	
+    	
+      if (Object.class.equals(cls)) {
         return method.invoke(this, args);
+        
+      }else if(IDbSyncWrapper.class.equals(cls)){
+    	  return this.createSyncProxy(proxy, args);
+    	  
       } else if (isDefaultMethod(method)) {
         return invokeDefaultMethod(proxy, method, args);
       }
@@ -56,7 +69,34 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       throw ExceptionUtil.unwrapThrowable(t);
     }
     final MapperMethod mapperMethod = cachedMapperMethod(method);
-    return mapperMethod.execute(sqlSession, args);
+    
+    Object[] data = this.getArgsAndSyncParam(args);
+    
+    return mapperMethod.execute(sqlSession, (Object[]) data[0], (DbSyncParam) data[1]);
+  }
+  
+  private Object[] getArgsAndSyncParam(Object[] args){
+	  if(args != null && args.length > 0){
+		  
+		  Object last = args[args.length - 1];
+		  
+		  if(last instanceof DbSyncParam){
+			  Object[] newArgs = new Object[args.length - 1];
+			  System.arraycopy(args, 0, newArgs, 0, newArgs.length);
+			  
+			  return new Object[]{ newArgs, last};
+		  }
+	  }
+	  
+	  return new Object[]{args, null};
+  }
+  
+  private Object createSyncProxy(Object proxy, Object[] args){
+	  String groupName = args != null && args.length > 0 ? ((String) args[0]) : SyncTemplate.DEFAULT_GROUP;
+	  
+	  Class<?> sourceCls = proxy.getClass().getInterfaces()[0];
+	  
+	  return Proxy.newProxyInstance(sourceCls.getClassLoader(), new Class[]{ sourceCls }, new DbSyncWrapperProxy(proxy, groupName));
   }
 
   private MapperMethod cachedMapperMethod(Method method) {

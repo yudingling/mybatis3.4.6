@@ -64,7 +64,7 @@ public class RefCursorTest {
 
     Configuration configuration = new Configuration();
     Environment environment = new Environment("development", new JdbcTransactionFactory(), new UnpooledDataSource(
-        "org.postgresql.Driver", url, null));
+        "org.postgresql.Driver", url, null), null, null);
     configuration.setEnvironment(environment);
     configuration.addMapper(OrdersMapper.class);
     sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);

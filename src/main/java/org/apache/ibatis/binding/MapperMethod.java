@@ -29,6 +29,8 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 
+import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -50,22 +52,22 @@ public class MapperMethod {
     this.method = new MethodSignature(config, mapperInterface, method);
   }
 
-  public Object execute(SqlSession sqlSession, Object[] args) {
+  public Object execute(SqlSession sqlSession, Object[] args, DbSyncParam syncParam) {
     Object result;
     switch (command.getType()) {
       case INSERT: {
       Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.insert(command.getName(), param));
+        result = rowCountResult(sqlSession.insert(command.getName(), param, syncParam));
         break;
       }
       case UPDATE: {
         Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.update(command.getName(), param));
+        result = rowCountResult(sqlSession.update(command.getName(), param, syncParam));
         break;
       }
       case DELETE: {
         Object param = method.convertArgsToSqlCommandParam(args);
-        result = rowCountResult(sqlSession.delete(command.getName(), param));
+        result = rowCountResult(sqlSession.delete(command.getName(), param, syncParam));
         break;
       }
       case SELECT:

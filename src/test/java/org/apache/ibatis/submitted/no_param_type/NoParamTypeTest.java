@@ -61,11 +61,11 @@ public class NoParamTypeTest {
       ObjA a = new ObjA();
       a.setId(1);
       a.setName(111);
-      sqlSession.insert("insertUser", a);
+      sqlSession.insert("insertUser", a, null);
       ObjB b = new ObjB();
       b.setId(2);
       b.setName("222");
-      sqlSession.insert("insertUser", b);
+      sqlSession.insert("insertUser", b, null);
       List<BatchResult> batchResults = sqlSession.flushStatements();
       batchResults.clear();
       sqlSession.clearCache();

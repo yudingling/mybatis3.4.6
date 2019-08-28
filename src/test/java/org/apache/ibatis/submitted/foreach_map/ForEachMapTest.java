@@ -68,7 +68,7 @@ public class ForEachMapTest {
     MapParam mapParam = new MapParam();
     mapParam.getMap().put("key 1", "value 1");
     mapParam.getMap().put("key 2", "value 2");
-    sqlSession.insert("ins_string_string", mapParam);
+    sqlSession.insert("ins_string_string", mapParam, null);
 
     List<StringStringMapEntry> entries = sqlSession.selectList("sel_string_string", new MapParam());
     Assert.assertEquals(new StringStringMapEntry("key 1", "value 1"), entries.get(0));
@@ -80,7 +80,7 @@ public class ForEachMapTest {
     MapParam mapParam = new MapParam();
     mapParam.getMap().put(12345, true);
     mapParam.getMap().put(54321, false);
-    sqlSession.insert("ins_int_bool", mapParam);
+    sqlSession.insert("ins_int_bool", mapParam, null);
 
     List<IntBoolMapEntry> entries = sqlSession.selectList("sel_int_bool");
     Assert.assertEquals(new IntBoolMapEntry(12345, true), entries.get(0));
@@ -92,7 +92,7 @@ public class ForEachMapTest {
     MapParam mapParam = new MapParam();
     mapParam.getMap().put(new NestedBean(12345, true), new NestedBean(54321, false));
     mapParam.getMap().put(new NestedBean(67890, true), new NestedBean(9876, false));
-    sqlSession.insert("ins_nested_bean", mapParam);
+    sqlSession.insert("ins_nested_bean", mapParam, null);
 
     List<NestedBeanMapEntry> entries = sqlSession.selectList("sel_nested_bean");
     Assert.assertEquals(new NestedBeanMapEntry(12345, true, 54321, false), entries.get(0));

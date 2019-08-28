@@ -85,7 +85,7 @@ public class SelectKeyTest {
     try {
       Map<String, String> parms = new HashMap<String, String>();
       parms.put("name", "Fred");
-      int rows = sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table1.insert", parms);
+      int rows = sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table1.insert", parms, null);
       assertEquals(1, rows);
       assertEquals(11, parms.get("id"));
 
@@ -101,7 +101,7 @@ public class SelectKeyTest {
     try {
       Map<String, String> parms = new HashMap<String, String>();
       parms.put("name", "Fred");
-      int rows = sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insert", parms);
+      int rows = sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insert", parms, null);
       assertEquals(1, rows);
       assertEquals(22, parms.get("id"));
 
@@ -116,7 +116,7 @@ public class SelectKeyTest {
     try {
       Map<String, String> parms = new HashMap<String, String>();
       parms.put("name", "Fred");
-      int rows = sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertNoValuesInSelectKey", parms);
+      int rows = sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertNoValuesInSelectKey", parms, null);
       assertEquals(1, rows);
       assertNull(parms.get("id"));
     } finally {
@@ -130,8 +130,8 @@ public class SelectKeyTest {
     try {
       Map<String, String> parms = new HashMap<String, String>();
       parms.put("name", "Fred");
-      sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertTooManyValuesInSelectKey", parms);
-      sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertTooManyValuesInSelectKey", parms);
+      sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertTooManyValuesInSelectKey", parms, null);
+      sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertTooManyValuesInSelectKey", parms, null);
     } finally {
       sqlSession.close();
     }
@@ -433,7 +433,7 @@ public class SelectKeyTest {
     try {
       Name name = new Name();
       name.setName("Kyoto");
-      sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertWrongKeyProperty", name);
+      sqlSession.insert("org.apache.ibatis.submitted.selectkey.Table2.insertWrongKeyProperty", name, null);
     } finally {
       sqlSession.close();
     }
