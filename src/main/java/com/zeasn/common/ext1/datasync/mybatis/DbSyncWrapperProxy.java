@@ -21,17 +21,19 @@ import java.lang.reflect.Method;
 public class DbSyncWrapperProxy implements InvocationHandler {
 	private Object mapperProxy;
 	private String groupName;
+	private long deferMilliseconds = 0;
 	
-	public DbSyncWrapperProxy(Object mapperProxy, String groupName){
+	public DbSyncWrapperProxy(Object mapperProxy, String groupName, long deferMilliseconds){
 		this.mapperProxy = mapperProxy;
 		this.groupName = groupName;
+		this.deferMilliseconds = deferMilliseconds;
 	}
 	
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if(!IDbSyncWrapper.class.equals(method.getDeclaringClass())){
 			//set sysParam to the last index of args
-			DbSyncParam param = new DbSyncParam(this.groupName);
+			DbSyncParam param = new DbSyncParam(this.groupName, this.deferMilliseconds);
 			Object[] newArgs;
 			
 			if(args != null && args.length > 0){

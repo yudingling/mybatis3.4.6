@@ -17,6 +17,7 @@ package com.zeasn.common.ext1.datasync.mybatis;
 
 public class DbSyncParam {
 	private String groupName;
+	private long deferMilliseconds = 0;
 
 	public String getGroupName() {
 		return groupName;
@@ -26,8 +27,17 @@ public class DbSyncParam {
 		this.groupName = groupName;
 	}
 
-	public DbSyncParam(String groupName) {
+	public long getDeferMilliseconds() {
+		return deferMilliseconds;
+	}
+
+	public void setDeferMilliseconds(long deferMilliseconds) {
+		this.deferMilliseconds = deferMilliseconds;
+	}
+
+	public DbSyncParam(String groupName, long deferMilliseconds) {
 		super();
 		this.groupName = groupName;
+		this.deferMilliseconds = deferMilliseconds;
 	}
 }

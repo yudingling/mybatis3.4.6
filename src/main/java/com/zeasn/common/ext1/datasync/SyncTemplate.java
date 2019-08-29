@@ -16,6 +16,7 @@
 package com.zeasn.common.ext1.datasync;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -82,6 +83,40 @@ public class SyncTemplate implements Serializable {
 		this.elasticsearch = new Setting();
 		this.rabbitmq = new Setting();
 		this.mysql = new Setting();
+	}
+	
+	public void updateGroups(SyncTemplate newTemplate){
+		if(newTemplate == null){
+			return;
+		}
+		
+		if(newTemplate.getElasticsearch() != null && newTemplate.getElasticsearch().getGroups() != null){
+			this.elasticsearch.setGroups(newTemplate.getElasticsearch().getGroups());
+			
+		}else{
+			this.elasticsearch.setGroups(new HashSet<>());
+		}
+		
+		if(newTemplate.getMysql() != null && newTemplate.getMysql().getGroups() != null){
+			this.mysql.setGroups(newTemplate.getMysql().getGroups());
+			
+		}else{
+			this.mysql.setGroups(new HashSet<>());
+		}
+		
+		if(newTemplate.getRabbitmq() != null && newTemplate.getRabbitmq().getGroups() != null){
+			this.rabbitmq.setGroups(newTemplate.getRabbitmq().getGroups());
+			
+		}else{
+			this.rabbitmq.setGroups(new HashSet<>());
+		}
+		
+		if(newTemplate.getRedis() != null && newTemplate.getRedis().getGroups() != null){
+			this.redis.setGroups(newTemplate.getRedis().getGroups());
+			
+		}else{
+			this.redis.setGroups(new HashSet<>());
+		}
 	}
 
 	public static class Setting implements Serializable{

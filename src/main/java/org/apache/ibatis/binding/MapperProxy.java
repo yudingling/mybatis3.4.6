@@ -93,10 +93,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   
   private Object createSyncProxy(Object proxy, Object[] args){
 	  String groupName = args != null && args.length > 0 ? ((String) args[0]) : SyncTemplate.DEFAULT_GROUP;
+	  long deferMilliseconds = args != null && args.length > 1 ? ((long) args[1]) : 0;
 	  
 	  Class<?> sourceCls = proxy.getClass().getInterfaces()[0];
 	  
-	  return Proxy.newProxyInstance(sourceCls.getClassLoader(), new Class[]{ sourceCls }, new DbSyncWrapperProxy(proxy, groupName));
+	  return Proxy.newProxyInstance(sourceCls.getClassLoader(), new Class[]{ sourceCls }, new DbSyncWrapperProxy(proxy, groupName, deferMilliseconds));
   }
 
   private MapperMethod cachedMapperMethod(Method method) {

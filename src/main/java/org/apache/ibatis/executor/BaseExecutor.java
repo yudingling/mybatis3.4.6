@@ -73,8 +73,8 @@ public abstract class BaseExecutor implements Executor {
   private boolean closed;
   
   //each un-transaction db action will got a unique executor, if there is a transaction, all actions in this transaction will use the same executor.
-  private Map<String, List<String>> groupedUptSql = new HashMap<>();
-  private List<String> unGroupUptSql = new ArrayList<>();
+  private Map<String, List<SyncSql>> groupedUptSql = new HashMap<>();
+  private List<SyncSql> unGroupUptSql = new ArrayList<>();
 
   protected BaseExecutor(Configuration configuration, Transaction transaction) {
     this.transaction = transaction;
@@ -126,13 +126,14 @@ public abstract class BaseExecutor implements Executor {
    */
   protected void afterUpdated(String sql, DbSyncParam syncParam){
 	  String groupName = syncParam != null ? syncParam.getGroupName() : null;
+	  long deferMilliseconds = syncParam != null ? syncParam.getDeferMilliseconds() : 0;
 	  
 	  if(SyncTemplateActor.canSync(this, groupName)){
 		  if(StringUtils.isNotEmpty(groupName)){
-			  this.groupedUptSql.computeIfAbsent(groupName, gpNm -> new ArrayList<>()).add(sql);
+			  this.groupedUptSql.computeIfAbsent(groupName, gpNm -> new ArrayList<>()).add(new SyncSql(sql, deferMilliseconds));
 			  
 		  }else{
-			  this.unGroupUptSql.add(sql);
+			  this.unGroupUptSql.add(new SyncSql(sql, deferMilliseconds));
 		  }
 	  }
   }
@@ -440,7 +441,7 @@ public abstract class BaseExecutor implements Executor {
 			return env.getTemplate().getMysql().canSync(groupName);
 		}
 		
-		public static void sync(BaseExecutor executor, Map<String, List<String>> groupedUptSql, List<String> unGroupUptSql){
+		public static void sync(BaseExecutor executor, Map<String, List<SyncSql>> groupedUptSql, List<SyncSql> unGroupUptSql){
 			Environment env = executor.configuration.getEnvironment();
 			
 			if(env.getSender() != null && env.getTemplate() != null){
@@ -450,16 +451,43 @@ public abstract class BaseExecutor implements Executor {
 				if(MapUtils.isNotEmpty(groupedUptSql)){
 					groupedUptSql.forEach((groupName, sqlList) ->{
 						if(CollectionUtils.isNotEmpty(sqlList)){
-							sqlList.forEach(sql -> sender.sendMysql(appName, groupName, sql));
+							sqlList.forEach(sql -> sender.sendMysql(appName, groupName, sql.getSql(), sql.getDeferMilliseconds()));
 						}
 					});
 				}
 				
 				if(CollectionUtils.isNotEmpty(unGroupUptSql)){
-					unGroupUptSql.forEach(sql -> sender.sendMysql(appName, null, sql));
+					unGroupUptSql.forEach(sql -> sender.sendMysql(appName, null, sql.getSql(), sql.getDeferMilliseconds()));
 				}
 			}
 		}
 	}
+    
+    static class SyncSql{
+	  private String sql;
+	  private long deferMilliseconds = 0;
+	
+	  public String getSql() {
+		  return sql;
+	  }
+	
+	  public void setSql(String sql) {
+		  this.sql = sql;
+	  }
+	
+	  public long getDeferMilliseconds() {
+		  return deferMilliseconds;
+	  }
+	
+	  public void setDeferMilliseconds(long deferMilliseconds) {
+		  this.deferMilliseconds = deferMilliseconds;
+	  }
+
+	  public SyncSql(String sql, long deferMilliseconds) {
+		  super();
+		  this.sql = sql;
+		  this.deferMilliseconds = deferMilliseconds;
+	  }
+  }
 
 }

@@ -22,26 +22,26 @@ public interface ISyncSender {
 	 * @param groupName if groupName is null, it means synchronize to all groups
 	 * @param data
 	 */
-	void sendRedis(String appName, String groupName, Object data);
+	void sendRedis(String appName, String groupName, Object data, long deferMilliseconds);
 	/**
 	 * sync elasticSearch
 	 * @param appName
 	 * @param groupName if groupName is null, it means synchronize to all groups
 	 * @param data
 	 */
-	void sendEs(String appName, String groupName, Object data);
+	void sendEs(String appName, String groupName, Object data, long deferMilliseconds);
 	/**
 	 * sync rabbitMq
 	 * @param appName
 	 * @param groupName if groupName is null, it means synchronize to all groups
 	 * @param data
 	 */
-	void sendRabbitmq(String appName, String groupName, Object data);
+	void sendRabbitmq(String appName, String groupName, Object data, long deferMilliseconds);
 	/**
 	 * sync mysql
 	 * @param appName
 	 * @param groupName if groupName is null, it means synchronize to all groups
 	 * @param data
 	 */
-	void sendMysql(String appName, String groupName, Object data);
+	void sendMysql(String appName, String groupName, Object data, long deferMilliseconds);
 }
