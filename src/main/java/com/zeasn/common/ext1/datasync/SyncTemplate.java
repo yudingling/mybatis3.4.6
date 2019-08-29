@@ -15,12 +15,15 @@
  */
 package com.zeasn.common.ext1.datasync;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class SyncTemplate {
+public class SyncTemplate implements Serializable {
+	private static final long serialVersionUID = -1493959936112801291L;
+
 	public static final String DEFAULT_GROUP = "default";
 	
 	/**
@@ -81,7 +84,9 @@ public class SyncTemplate {
 		this.mysql = new Setting();
 	}
 
-	public static class Setting{
+	public static class Setting implements Serializable{
+		private static final long serialVersionUID = -4559631895431895276L;
+		
 		//these fields may be modified during synchronization of configuration. it must be a volatile field.
 		private volatile boolean fullSync = false;
 		private volatile Set<String> groups;
