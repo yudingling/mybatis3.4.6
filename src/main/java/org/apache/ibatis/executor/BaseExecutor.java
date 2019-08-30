@@ -52,6 +52,7 @@ import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 import com.zeasn.common.ext1.datasync.ISyncSender;
+import com.zeasn.common.ext1.datasync.data.MysqlSyncData;
 import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
 
 /**
@@ -451,13 +452,13 @@ public abstract class BaseExecutor implements Executor {
 				if(MapUtils.isNotEmpty(groupedUptSql)){
 					groupedUptSql.forEach((groupName, sqlList) ->{
 						if(CollectionUtils.isNotEmpty(sqlList)){
-							sqlList.forEach(sql -> sender.sendMysql(appName, groupName, sql.getSql(), sql.getDeferMilliseconds()));
+							sqlList.forEach(sql -> sender.sendMysql(new MysqlSyncData(appName, groupName, sql.getDeferMilliseconds(), sql.getSql())));
 						}
 					});
 				}
 				
 				if(CollectionUtils.isNotEmpty(unGroupUptSql)){
-					unGroupUptSql.forEach(sql -> sender.sendMysql(appName, null, sql.getSql(), sql.getDeferMilliseconds()));
+					unGroupUptSql.forEach(sql -> sender.sendMysql(new MysqlSyncData(appName, null, sql.getDeferMilliseconds(), sql.getSql())));
 				}
 			}
 		}
