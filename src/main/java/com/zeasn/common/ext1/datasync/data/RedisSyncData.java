@@ -9,8 +9,7 @@ public class RedisSyncData extends SyncData {
 	private String key;
 	private String field;
 	private Serializable value;
-	private Long expireSeconds; 
-	private Integer randomMax;
+	private Long expireSeconds;
 	private Long delta;
 	
 	public ActionType getAction() {
@@ -53,14 +52,6 @@ public class RedisSyncData extends SyncData {
 		this.expireSeconds = expireSeconds;
 	}
 
-	public Integer getRandomMax() {
-		return randomMax;
-	}
-
-	public void setRandomMax(Integer randomMax) {
-		this.randomMax = randomMax;
-	}
-
 	public Long getDelta() {
 		return delta;
 	}
@@ -81,14 +72,13 @@ public class RedisSyncData extends SyncData {
 		this.value = value;
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, Serializable value, long expireSeconds, int randomMax) {
+	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, Serializable value, long expireSeconds) {
 		super(appName, groupName, deferMilliseconds);
 		
 		this.action = action;
 		this.key = key;
 		this.value = value;
 		this.expireSeconds = expireSeconds;
-		this.randomMax = randomMax;
 	}
 	
 	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String field, Serializable value) {
