@@ -25,4 +25,9 @@ public interface ISyncSender {
 	void sendEs(EsSyncData data);
 	void sendRabbitmq(RabbitmqSyncData data);
 	void sendMysql(MysqlSyncData data);
+	
+	/**
+	 * dispose the resources of the sender
+	 */
+	void close();
 }

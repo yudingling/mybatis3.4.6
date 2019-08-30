@@ -16,7 +16,10 @@
 package com.zeasn.common.ext1.datasync;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -144,6 +147,86 @@ public class SyncTemplate implements Serializable {
 		 */
 		public boolean canSync(String groupName){
 			return CollectionUtils.isNotEmpty(this.groups) && (fullSync || (StringUtils.isNotEmpty(groupName) && this.groups.contains(groupName)));
+		}
+	}
+	
+	/**
+	 * we haven't figure out how to serialize some kinds of es parameters like 'QueryBuild', so some es methods are sync from the client itself.
+	 *   this will improved in the future and move all to sync-service.
+	 */
+	public static class EsSetting extends Setting{
+		private static final long serialVersionUID = 1277578152316933307L;
+		
+		private volatile Map<String, List<ElasticsearchSGProperties>> esCfgGroups;
+
+		public Map<String, List<ElasticsearchSGProperties>> getEsCfgGroups() {
+			return esCfgGroups;
+		}
+
+		public void setEsCfgGroups(
+				Map<String, List<ElasticsearchSGProperties>> esCfgGroups) {
+			this.esCfgGroups = esCfgGroups;
+		}
+	}
+	
+	public static class ElasticsearchSGProperties implements Serializable{
+		private static final long serialVersionUID = 2741932273550699372L;
+		
+		private String clusterName = "elasticsearch";
+		private String clusterNodes;
+		private SearchGuardCfg searchguard;
+		private Map<String, String> properties = new HashMap<>();
+		
+		public String getClusterName() {
+			return clusterName;
+		}
+		public void setClusterName(String clusterName) {
+			this.clusterName = clusterName;
+		}
+		public String getClusterNodes() {
+			return clusterNodes;
+		}
+		public void setClusterNodes(String clusterNodes) {
+			this.clusterNodes = clusterNodes;
+		}
+		public SearchGuardCfg getSearchguard() {
+			return searchguard;
+		}
+		public void setSearchguard(SearchGuardCfg searchguard) {
+			this.searchguard = searchguard;
+		}
+		public Map<String, String> getProperties() {
+			return properties;
+		}
+		public void setProperties(Map<String, String> properties) {
+			this.properties = properties;
+		}
+	}
+	
+	public static class SearchGuardCfg implements Serializable{
+		private static final long serialVersionUID = 2127460466332926583L;
+		
+		private String pemkey;
+		private String pemcert;
+		private String cacert;
+		
+		public String getPemkey() {
+			return pemkey;
+		}
+		public void setPemkey(String pemkey) {
+			this.pemkey = pemkey;
+		}
+		public String getPemcert() {
+			return pemcert;
+		}
+		public void setPemcert(String pemcert) {
+			this.pemcert = pemcert;
+		}
+		public String getCacert() {
+			return cacert;
+		}
+		public void setCacert(String cacert) {
+			this.cacert = cacert;
 		}
 	}
 }
