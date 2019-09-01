@@ -65,10 +65,6 @@ public class EsSyncData extends SyncData {
 		/**
 		 * support by local-client
 		 */
-		UPDATE,
-		/**
-		 * support by sync-service
-		 */
-		UPDATE_SELECTIVE
+		UPDATE
 	}
 }
