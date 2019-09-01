@@ -7,6 +7,7 @@ public class EsSyncData extends SyncData {
 	
 	private ActionType action;
 	private Serializable model;
+	private boolean upsert = false;
 	
 	public ActionType getAction() {
 		return action;
@@ -22,15 +23,24 @@ public class EsSyncData extends SyncData {
 		this.model = model;
 	}
 
+	public boolean isUpsert() {
+		return upsert;
+	}
+
+	public void setUpsert(boolean upsert) {
+		this.upsert = upsert;
+	}
+
 	public EsSyncData(){
 		super();
 	}
 	
-	public EsSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, Serializable model){
+	public EsSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, Serializable model, boolean upsert){
 		super(appName, groupName, deferMilliseconds);
 		
 		this.action = action;
 		this.model = model;
+		this.upsert = upsert;
 	}
 
 	public enum ActionType{
