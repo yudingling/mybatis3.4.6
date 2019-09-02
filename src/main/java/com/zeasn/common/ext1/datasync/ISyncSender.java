@@ -30,4 +30,5 @@ public interface ISyncSender {
 	 * dispose the resources of the sender
 	 */
 	void close();
+	boolean isClosed();
 }
