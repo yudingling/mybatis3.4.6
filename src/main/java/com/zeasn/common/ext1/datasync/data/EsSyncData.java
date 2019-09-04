@@ -1,12 +1,10 @@
 package com.zeasn.common.ext1.datasync.data;
 
-import java.io.Serializable;
-
 public class EsSyncData extends SyncData {
 	private static final long serialVersionUID = 1815560778676010106L;
 	
 	private ActionType action;
-	private Serializable model;
+	private String serializedValue;
 	private boolean upsert = false;
 	
 	public ActionType getAction() {
@@ -16,11 +14,13 @@ public class EsSyncData extends SyncData {
 	public void setAction(ActionType action) {
 		this.action = action;
 	}
-	public Serializable getModel() {
-		return model;
+
+	public String getSerializedValue() {
+		return serializedValue;
 	}
-	public void setModel(Serializable model) {
-		this.model = model;
+
+	public void setSerializedValue(String serializedValue) {
+		this.serializedValue = serializedValue;
 	}
 
 	public boolean isUpsert() {
@@ -35,11 +35,11 @@ public class EsSyncData extends SyncData {
 		super();
 	}
 	
-	public EsSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, Serializable model, boolean upsert){
+	public EsSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String serializedValue, boolean upsert){
 		super(appName, groupName, deferMilliseconds);
 		
 		this.action = action;
-		this.model = model;
+		this.serializedValue = serializedValue;
 		this.upsert = upsert;
 	}
 

@@ -1,14 +1,12 @@
 package com.zeasn.common.ext1.datasync.data;
 
-import java.io.Serializable;
-
 public class RedisSyncData extends SyncData {
 	private static final long serialVersionUID = 5231204501480420843L;
 	
 	private ActionType action;
 	private String key;
 	private String field;
-	private Serializable value;
+	private String serializedValue;
 	private Long expireSeconds;
 	private Long delta;
 	
@@ -36,12 +34,12 @@ public class RedisSyncData extends SyncData {
 		this.field = field;
 	}
 
-	public Serializable getValue() {
-		return value;
+	public String getSerializedValue() {
+		return serializedValue;
 	}
 
-	public void setValue(Serializable value) {
-		this.value = value;
+	public void setSerializedValue(String serializedValue) {
+		this.serializedValue = serializedValue;
 	}
 
 	public Long getExpireSeconds() {
@@ -64,62 +62,75 @@ public class RedisSyncData extends SyncData {
 		super();
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, Serializable value) {
+	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action) {
 		super(appName, groupName, deferMilliseconds);
 		
 		this.action = action;
-		this.key = key;
-		this.value = value;
+	}
+
+	public static RedisSyncData fromKeyValue(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String serializedValue){
+		RedisSyncData obj = new RedisSyncData(appName, groupName, deferMilliseconds, action);
+		
+		obj.key = key;
+		obj.serializedValue = serializedValue;
+		
+		return obj;
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, Serializable value, long expireSeconds) {
-		super(appName, groupName, deferMilliseconds);
+	public static RedisSyncData fromKeyValueExpr(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String serializedValue, long expireSeconds) {
+		RedisSyncData obj = new RedisSyncData(appName, groupName, deferMilliseconds, action);
 		
-		this.action = action;
-		this.key = key;
-		this.value = value;
-		this.expireSeconds = expireSeconds;
+		obj.key = key;
+		obj.serializedValue = serializedValue;
+		obj.expireSeconds = expireSeconds;
+		
+		return obj;
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String field, Serializable value) {
-		super(appName, groupName, deferMilliseconds);
+	public static RedisSyncData fromKeyFieldValue(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String field, String serializedValue) {
+		RedisSyncData obj = new RedisSyncData(appName, groupName, deferMilliseconds, action);
 		
-		this.action = action;
-		this.key = key;
-		this.field = field;
-		this.value = value;
+		obj.key = key;
+		obj.field = field;
+		obj.serializedValue = serializedValue;
+		
+		return obj;
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key) {
-		super(appName, groupName, deferMilliseconds);
+	public static RedisSyncData fromKey(String appName, String groupName, long deferMilliseconds, ActionType action, String key) {
+		RedisSyncData obj = new RedisSyncData(appName, groupName, deferMilliseconds, action);
 		
-		this.action = action;
-		this.key = key;
+		obj.key = key;
+		
+		return obj;
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String field) {
-		super(appName, groupName, deferMilliseconds);
+	public static RedisSyncData fromKeyField(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String field) {
+		RedisSyncData obj = new RedisSyncData(appName, groupName, deferMilliseconds, action);
 		
-		this.action = action;
-		this.key = key;
-		this.field = field;
+		obj.key = key;
+		obj.field = field;
+		
+		return obj;
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, long delta) {
-		super(appName, groupName, deferMilliseconds);
+	public static RedisSyncData fromKeyDelta(String appName, String groupName, long deferMilliseconds, ActionType action, String key, long delta) {
+		RedisSyncData obj = new RedisSyncData(appName, groupName, deferMilliseconds, action);
 		
-		this.action = action;
-		this.key = key;
-		this.delta = delta;
+		obj.key = key;
+		obj.delta = delta;
+		
+		return obj;
 	}
 	
-	public RedisSyncData(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String field, long delta) {
-		super(appName, groupName, deferMilliseconds);
+	public static RedisSyncData fromKeyFieldDelta(String appName, String groupName, long deferMilliseconds, ActionType action, String key, String field, long delta) {
+		RedisSyncData obj = new RedisSyncData(appName, groupName, deferMilliseconds, action);
 		
-		this.action = action;
-		this.key = key;
-		this.field = field;
-		this.delta = delta;
+		obj.key = key;
+		obj.field = field;
+		obj.delta = delta;
+		
+		return obj;
 	}
 	
 	public enum ActionType{
