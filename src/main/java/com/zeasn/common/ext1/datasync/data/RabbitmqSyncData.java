@@ -6,6 +6,7 @@ public class RabbitmqSyncData extends SyncData {
 	private String exchange;
 	private String routingKey;
 	private String serializedValue;
+	private String serializedClassName;
 	
 	public String getExchange() {
 		return exchange;
@@ -25,16 +26,23 @@ public class RabbitmqSyncData extends SyncData {
 	public void setSerializedValue(String serializedValue) {
 		this.serializedValue = serializedValue;
 	}
+	public String getSerializedClassName() {
+		return serializedClassName;
+	}
+	public void setSerializedClassName(String serializedClassName) {
+		this.serializedClassName = serializedClassName;
+	}
 	
 	public RabbitmqSyncData(){
 		super();
 	}
 	
-	public RabbitmqSyncData(String appName, String groupName, long deferMilliseconds, String exchange, String routingKey, String serializedValue){
+	public RabbitmqSyncData(String appName, String groupName, long deferMilliseconds, String exchange, String routingKey, String serializedValue, String serializedClassName){
 		super(appName, groupName, deferMilliseconds);
 		
 		this.exchange = exchange;
 		this.routingKey = routingKey;
 		this.serializedValue = serializedValue;
+		this.serializedClassName = serializedClassName;
 	}
 }
