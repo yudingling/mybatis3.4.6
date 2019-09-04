@@ -79,6 +79,10 @@ public class SyncTemplate implements Serializable {
 		this.mysql = mysql;
 	}
 	
+	public SyncTemplate(){
+		super();
+	}
+	
 	public SyncTemplate(String appName){
 		this.appName = appName;
 		
