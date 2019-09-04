@@ -4,7 +4,6 @@ public class EsSyncData extends SyncData {
 	private static final long serialVersionUID = 1815560778676010106L;
 	
 	private ActionType action;
-	private String cls;
 	private String index;
 	private String type;
 	private String id;
@@ -20,14 +19,6 @@ public class EsSyncData extends SyncData {
 
 	public void setAction(ActionType action) {
 		this.action = action;
-	}
-
-	public String getCls() {
-		return cls;
-	}
-
-	public void setCls(String cls) {
-		this.cls = cls;
 	}
 
 	public String getIndex() {
@@ -99,13 +90,12 @@ public class EsSyncData extends SyncData {
 	}
 	
 	public EsSyncData(String appName, String groupName, long deferMilliseconds,
-			ActionType action, String cls, String index, String type,
+			ActionType action, String index, String type,
 			String id, String parentId, Long version, String mappingJson,
 			String serializedValue, boolean upsert) {
 		super(appName, groupName, deferMilliseconds);
 		
 		this.action = action;
-		this.cls = cls;
 		this.index = index;
 		this.type = type;
 		this.id = id;
