@@ -35,7 +35,7 @@ public class SyncTemplate implements Serializable {
 	 */
 	private String appName;
 	private Setting redis;
-	private Setting elasticsearch;
+	private EsSetting elasticsearch;
 	private Setting rabbitmq;
 	private Setting mysql;
 	
@@ -55,11 +55,11 @@ public class SyncTemplate implements Serializable {
 		this.redis = redis;
 	}
 
-	public Setting getElasticsearch() {
+	public EsSetting getElasticsearch() {
 		return elasticsearch;
 	}
 
-	public void setElasticsearch(Setting elasticsearch) {
+	public void setElasticsearch(EsSetting elasticsearch) {
 		this.elasticsearch = elasticsearch;
 	}
 
@@ -83,7 +83,7 @@ public class SyncTemplate implements Serializable {
 		this.appName = appName;
 		
 		this.redis = new Setting();
-		this.elasticsearch = new Setting();
+		this.elasticsearch = new EsSetting();
 		this.rabbitmq = new Setting();
 		this.mysql = new Setting();
 	}
