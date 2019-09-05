@@ -29,7 +29,6 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
 
 import com.zeasn.common.ext1.datasync.SyncTemplate;
-import com.zeasn.common.ext1.datasync.mybatis.DbSyncParam;
 import com.zeasn.common.ext1.datasync.mybatis.DbSyncWrapperProxy;
 import com.zeasn.common.ext1.datasync.mybatis.IDbSyncWrapper;
 
@@ -70,25 +69,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     }
     final MapperMethod mapperMethod = cachedMapperMethod(method);
     
-    Object[] data = this.getArgsAndSyncParam(args);
-    
-    return mapperMethod.execute(sqlSession, (Object[]) data[0], (DbSyncParam) data[1]);
-  }
-  
-  private Object[] getArgsAndSyncParam(Object[] args){
-	  if(args != null && args.length > 0){
-		  
-		  Object last = args[args.length - 1];
-		  
-		  if(last instanceof DbSyncParam){
-			  Object[] newArgs = new Object[args.length - 1];
-			  System.arraycopy(args, 0, newArgs, 0, newArgs.length);
-			  
-			  return new Object[]{ newArgs, last};
-		  }
-	  }
-	  
-	  return new Object[]{args, null};
+    return mapperMethod.execute(sqlSession, args, null);
   }
   
   private Object createSyncProxy(Object proxy, Object[] args){
@@ -97,7 +78,10 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 	  
 	  Class<?> sourceCls = proxy.getClass().getInterfaces()[0];
 	  
-	  return Proxy.newProxyInstance(sourceCls.getClassLoader(), new Class[]{ sourceCls }, new DbSyncWrapperProxy(proxy, groupName, deferMilliseconds));
+	  return Proxy.newProxyInstance(
+			  sourceCls.getClassLoader(), 
+			  new Class[]{ sourceCls }, 
+			  new DbSyncWrapperProxy(sqlSession, mapperInterface, methodCache, groupName, deferMilliseconds));
   }
 
   private MapperMethod cachedMapperMethod(Method method) {

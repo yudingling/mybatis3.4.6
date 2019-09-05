@@ -15,40 +15,104 @@
  */
 package com.zeasn.common.ext1.datasync.mybatis;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+
+import org.apache.ibatis.binding.MapperMethod;
+import org.apache.ibatis.lang.UsesJava7;
+import org.apache.ibatis.reflection.ExceptionUtil;
+import org.apache.ibatis.session.SqlSession;
 
 public class DbSyncWrapperProxy implements InvocationHandler {
-	private Object mapperProxy;
 	private String groupName;
 	private long deferMilliseconds = 0;
-	
-	public DbSyncWrapperProxy(Object mapperProxy, String groupName, long deferMilliseconds){
-		this.mapperProxy = mapperProxy;
+
+	private final SqlSession sqlSession;
+	private final Class<?> mapperInterface;
+	private final Map<Method, MapperMethod> methodCache;
+
+	public DbSyncWrapperProxy(SqlSession sqlSession, Class<?> mapperInterface, Map<Method, MapperMethod> methodCache, 
+			String groupName, long deferMilliseconds) {
+		this.sqlSession = sqlSession;
+		this.mapperInterface = mapperInterface;
+		this.methodCache = methodCache;
+
 		this.groupName = groupName;
 		this.deferMilliseconds = deferMilliseconds;
 	}
-	
+
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		if(!IDbSyncWrapper.class.equals(method.getDeclaringClass())){
-			//set sysParam to the last index of args
+		if (!IDbSyncWrapper.class.equals(method.getDeclaringClass())) {
+			// set sysParam to the last index of args
 			DbSyncParam param = new DbSyncParam(this.groupName, this.deferMilliseconds);
-			Object[] newArgs;
 			
-			if(args != null && args.length > 0){
-				newArgs = new Object[args.length + 1];
-				
-				System.arraycopy(args, 0, newArgs, 0, args.length);
-				newArgs[args.length] = param;
-				
-			}else{
-				newArgs = new Object[]{param};
-			}
-			
-			return method.invoke(this.mapperProxy, newArgs);
+			return this.invokeInner(proxy, method, args, param);
 		}
 		
 		throw new Exception("method not supported");
+	}
+
+	private Object invokeInner(Object proxy, Method method, Object[] args, DbSyncParam param)
+			throws Throwable {
+		try {
+			Class<?> cls = method.getDeclaringClass();
+
+			if (Object.class.equals(cls)) {
+				return method.invoke(this, args);
+
+			} else if (isDefaultMethod(method)) {
+				return invokeDefaultMethod(proxy, method, args);
+			}
+			
+		} catch (Throwable t) {
+			throw ExceptionUtil.unwrapThrowable(t);
+		}
+		
+		final MapperMethod mapperMethod = cachedMapperMethod(method);
+		
+		return mapperMethod.execute(sqlSession, args, param);
+	}
+
+	private MapperMethod cachedMapperMethod(Method method) {
+		MapperMethod mapperMethod = methodCache.get(method);
+		if (mapperMethod == null) {
+			mapperMethod = new MapperMethod(mapperInterface, method,
+					sqlSession.getConfiguration());
+			methodCache.put(method, mapperMethod);
+		}
+		return mapperMethod;
+	}
+
+	@UsesJava7
+	private Object invokeDefaultMethod(Object proxy, Method method,
+			Object[] args) throws Throwable {
+		final Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class
+				.getDeclaredConstructor(Class.class, int.class);
+		if (!constructor.isAccessible()) {
+			constructor.setAccessible(true);
+		}
+		final Class<?> declaringClass = method.getDeclaringClass();
+		return constructor
+				.newInstance(
+						declaringClass,
+						MethodHandles.Lookup.PRIVATE
+								| MethodHandles.Lookup.PROTECTED
+								| MethodHandles.Lookup.PACKAGE
+								| MethodHandles.Lookup.PUBLIC)
+				.unreflectSpecial(method, declaringClass).bindTo(proxy)
+				.invokeWithArguments(args);
+	}
+
+	/**
+	 * Backport of java.lang.reflect.Method#isDefault()
+	 */
+	private boolean isDefaultMethod(Method method) {
+		return (method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC
+				&& method.getDeclaringClass().isInterface();
 	}
 }

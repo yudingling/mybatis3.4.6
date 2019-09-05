@@ -15,8 +15,8 @@
  */
 package com.zeasn.common.ext1.datasync.mybatis;
 
-public interface IDbSyncWrapper {
-	Object createSync();
-	Object createSync(String groupName);
-	Object createSync(String groupName, long deferMilliseconds);
+public interface IDbSyncWrapper<S extends IDbSyncWrapper<S>> {
+	S createSync();
+	S createSync(String groupName);
+	S createSync(String groupName, long deferMilliseconds);
 }
