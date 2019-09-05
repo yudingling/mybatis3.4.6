@@ -49,8 +49,8 @@ public class SimpleExecutor extends BaseExecutor {
       Configuration configuration = ms.getConfiguration();
       StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
       stmt = prepareStatement(handler, ms.getStatementLog());
-      //get executed sql. stmt is a proxy and its toString method has been overrided
-      String sql = stmt.toString();
+      
+      String sql = this.getMySqlStr(stmt);
       
       int ret = handler.update(stmt);
       
@@ -61,6 +61,14 @@ public class SimpleExecutor extends BaseExecutor {
     } finally {
       closeStatement(stmt);
     }
+  }
+  
+  private String getMySqlStr(Statement stmt){
+	  //get executed sql. stmt is a proxy (PreparedStatementLogger) and its toString method has been overrided
+      String sql = stmt.toString();
+      
+      int index = sql.indexOf(":");
+      return index >=0 && index < (sql.length() - 1) ? sql.substring(index + 1) : sql;
   }
 
   @Override
