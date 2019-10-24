@@ -107,27 +107,12 @@ public class EsSyncData extends SyncData {
 	}
 
 	public enum ActionType{
-		/**
-		 * support by sync-service
-		 */
 		SAVE,
 		
-		/**
-		 * support by local-client
-		 */
 		DELETE_WITH_QUERY,
-		/**
-		 * support by local-client
-		 */
 		DELETE_WITH_FILTER,
-		/**
-		 * support by sync-service
-		 */
 		DELETE_WITH_MODEL,
 		
-		/**
-		 * support by local-client
-		 */
 		UPDATE
 	}
 }
